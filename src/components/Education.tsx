@@ -61,14 +61,9 @@ export default function Education({ onImageClick }: EducationProps) {
           <span className="section-label__text">Education</span>
         </motion.div>
 
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
-        >
+        <h2 className="section-title">
           Where I Learned & Grew
-        </motion.h2>
+        </h2>
 
         <div className="education__timeline">
           {education.map((edu, i) => (

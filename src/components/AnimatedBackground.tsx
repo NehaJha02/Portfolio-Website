@@ -19,16 +19,16 @@ export default function AnimatedBackground() {
     window.addEventListener('resize', resize);
 
     const blobs = [
-      { x: 0.12, y: 0.05, r: 350, color: [156, 107, 189], speed: 0.0003 },
-      { x: 0.88, y: 0.08, r: 280, color: [240, 166, 202], speed: 0.0004 },
-      { x: 0.5, y: 0.18, r: 250, color: [212, 187, 240], speed: 0.00035 },
-      { x: 0.15, y: 0.32, r: 300, color: [240, 166, 202], speed: 0.00025 },
-      { x: 0.82, y: 0.38, r: 260, color: [156, 107, 189], speed: 0.00045 },
-      { x: 0.35, y: 0.52, r: 280, color: [212, 187, 240], speed: 0.0003 },
-      { x: 0.75, y: 0.62, r: 240, color: [240, 166, 202], speed: 0.0004 },
-      { x: 0.2, y: 0.72, r: 300, color: [156, 107, 189], speed: 0.00035 },
-      { x: 0.6, y: 0.82, r: 260, color: [212, 187, 240], speed: 0.0003 },
-      { x: 0.85, y: 0.92, r: 280, color: [240, 166, 202], speed: 0.00025 },
+      { x: 0.08, y: 0.03, r: 500, color: [176, 136, 212], speed: 0.0002 },
+      { x: 0.92, y: 0.06, r: 450, color: [224, 132, 158], speed: 0.0003 },
+      { x: 0.5, y: 0.15, r: 400, color: [232, 180, 160], speed: 0.00025 },
+      { x: 0.12, y: 0.32, r: 480, color: [194, 163, 224], speed: 0.00018 },
+      { x: 0.88, y: 0.38, r: 420, color: [212, 184, 150], speed: 0.00035 },
+      { x: 0.3, y: 0.52, r: 460, color: [224, 132, 158], speed: 0.00022 },
+      { x: 0.75, y: 0.6, r: 400, color: [176, 136, 212], speed: 0.0003 },
+      { x: 0.18, y: 0.72, r: 480, color: [232, 180, 160], speed: 0.00025 },
+      { x: 0.6, y: 0.82, r: 420, color: [194, 163, 224], speed: 0.0002 },
+      { x: 0.85, y: 0.92, r: 450, color: [224, 132, 158], speed: 0.00018 },
     ];
 
     const draw = () => {
@@ -39,8 +39,8 @@ export default function AnimatedBackground() {
         const cx = (b.x + Math.sin(time * b.speed) * 0.04) * canvas.width;
         const cy = (b.y + Math.cos(time * b.speed * 1.3) * 0.02) * canvas.height;
         const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, b.r);
-        gradient.addColorStop(0, `rgba(${b.color.join(',')}, 0.04)`);
-        gradient.addColorStop(0.5, `rgba(${b.color.join(',')}, 0.015)`);
+        gradient.addColorStop(0, `rgba(${b.color.join(',')}, 0.18)`);
+        gradient.addColorStop(0.5, `rgba(${b.color.join(',')}, 0.07)`);
         gradient.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.beginPath();
         ctx.arc(cx, cy, b.r, 0, Math.PI * 2);

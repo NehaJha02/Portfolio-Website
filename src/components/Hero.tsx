@@ -36,7 +36,7 @@ function ParticleCanvas() {
         vx: (Math.random() - 0.5) * 0.4,
         vy: (Math.random() - 0.5) * 0.4,
         r: Math.random() * 2.5 + 0.5,
-        color: ['rgba(156,107,189,', 'rgba(240,166,202,', 'rgba(212,187,240,'][Math.floor(Math.random() * 3)],
+        color: ['rgba(139,95,191,', 'rgba(224,132,158,', 'rgba(194,163,224,', 'rgba(232,180,160,'][Math.floor(Math.random() * 4)],
         pulse: Math.random() * Math.PI * 2,
       });
     }
@@ -62,7 +62,7 @@ function ParticleCanvas() {
           }
         }
 
-        const alpha = 0.3 + Math.sin(p.pulse) * 0.2;
+        const alpha = 0.35 + Math.sin(p.pulse) * 0.25;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.color + alpha + ')';
@@ -78,7 +78,7 @@ function ParticleCanvas() {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(156,107,189,${0.12 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(139,95,191,${0.15 * (1 - dist / 120)})`;
             ctx.lineWidth = 0.6;
             ctx.stroke();
           }

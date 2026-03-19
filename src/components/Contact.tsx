@@ -62,14 +62,9 @@ export default function Contact() {
           <span className="section-label__text">Get In Touch</span>
         </motion.div>
 
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-          animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-          transition={{ delay: 0.2, duration: 0.8 }}
-        >
+        <h2 className="section-title">
           Let's Connect
-        </motion.h2>
+        </h2>
 
         <motion.p
           className="contact__intro"

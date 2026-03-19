@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi';
 
 const navLinks = [
   { name: 'Home', href: '#hero' },
@@ -43,12 +43,18 @@ function MagneticLink({ children, href, className, delay }) {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const toggleDark = () => {
+    setDark(!dark);
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
     <motion.nav
@@ -80,6 +86,16 @@ export default function Navbar() {
             </MagneticLink>
           ))}
         </div>
+
+        <motion.button
+          className="navbar__theme-toggle"
+          onClick={toggleDark}
+          aria-label="Toggle dark mode"
+          whileHover={{ scale: 1.15, rotate: 15 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          {dark ? <FiSun /> : <FiMoon />}
+        </motion.button>
 
         <button
           className="navbar__mobile-toggle"

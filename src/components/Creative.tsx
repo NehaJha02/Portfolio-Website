@@ -15,6 +15,45 @@ const drawings = [
   '/images/drawings/draw5.jpeg',
 ];
 
+/* Each drawing "develops" from blurred to sharp as you scroll to it */
+function DevelopingImage({ src, index, onImageClick }: {
+  src: string; index: number;
+  onImageClick?: (images: string[], index: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'center center'],
+  });
+  const blur = useTransform(scrollYProgress, [0, 1], [20, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1.15, 1]);
+  const brightness = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.7, 1]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [index % 2 === 0 ? 4 : -4, 0]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="creative__gallery-item glass-card"
+      style={{ rotate }}
+      whileHover={{ y: -15, scale: 1.04 }}
+      onClick={() => onImageClick?.(drawings, index)}
+    >
+      <motion.div
+        className="creative__image-wrapper"
+        style={{
+          filter: useTransform(
+            [blur, brightness],
+            ([b, br]) => `blur(${b}px) brightness(${br})`
+          ),
+          scale,
+        }}
+      >
+        <img src={src} alt="Drawing" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function BrushReveal({ children, delay = 0, inView }: { children: ReactNode; delay?: number; inView: boolean }) {
   return (
     <div className="brush-reveal">
@@ -43,16 +82,10 @@ function BrushReveal({ children, delay = 0, inView }: { children: ReactNode; del
 
 export default function Creative({ onImageClick }: CreativeProps) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
   return (
     <section className="creative" id="creative" ref={ref}>
-      <div ref={sectionRef} className="creative__container">
+      <div className="creative__container">
         <motion.div
           className="section-label"
           initial={{ opacity: 0, x: -60 }}
@@ -75,12 +108,7 @@ export default function Creative({ onImageClick }: CreativeProps) {
           transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="creative__icon-wrapper">
-            <motion.div
-              animate={inView ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              <FiHeart className="creative__icon" />
-            </motion.div>
+            <FiHeart className="creative__icon" />
           </div>
           <h3>Art & Creative Expression</h3>
           <p>
@@ -95,33 +123,11 @@ export default function Creative({ onImageClick }: CreativeProps) {
           </p>
         </motion.div>
 
-        <motion.div className="creative__gallery" style={{ y: parallaxY }}>
+        <div className="creative__gallery">
           {drawings.map((src, i) => (
-            <motion.div
-              key={i}
-              className="creative__gallery-item glass-card"
-              initial={{ opacity: 0, y: 80, rotate: i % 2 === 0 ? -5 : 5 }}
-              animate={inView ? { opacity: 1, y: 0, rotate: 0 } : {}}
-              transition={{
-                delay: 0.6 + i * 0.12,
-                duration: 0.9,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              whileHover={{
-                y: -15,
-                scale: 1.05,
-                rotate: i % 2 === 0 ? 2 : -2,
-                boxShadow: '0 25px 50px rgba(156, 107, 189, 0.3)',
-              }}
-              onClick={() => onImageClick?.(drawings, i)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="creative__image-wrapper">
-                <img src={src} alt="Drawing" />
-              </div>
-            </motion.div>
+            <DevelopingImage key={i} src={src} index={i} onImageClick={onImageClick} />
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

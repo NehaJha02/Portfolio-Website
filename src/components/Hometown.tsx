@@ -32,14 +32,9 @@ export default function Hometown({ onImageClick }: HometownProps) {
           <span className="section-label__text">My Hometown</span>
         </motion.div>
 
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
-        >
+        <h2 className="section-title">
           Jalpaiguri, West Bengal
-        </motion.h2>
+        </h2>
 
         <motion.p
           className="hometown__description"
