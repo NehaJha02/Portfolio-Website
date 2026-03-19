@@ -1,3 +1,5 @@
+import { useState, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -9,38 +11,73 @@ import Internship from './components/Internship';
 import Achievements from './components/Achievements';
 import Creative from './components/Creative';
 import Contact from './components/Contact';
+import PageLoader from './components/PageLoader';
+import CustomCursor from './components/CustomCursor';
+import ScrollProgress from './components/ScrollProgress';
+import Lightbox from './components/Lightbox';
 import './App.css';
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState({ images: [], index: null });
+
+  const openLightbox = useCallback((images, index) => {
+    setLightbox({ images, index });
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setLightbox({ images: [], index: null });
+  }, []);
+
+  const prevImage = useCallback(() => {
+    setLightbox((prev) => ({
+      ...prev,
+      index: (prev.index - 1 + prev.images.length) % prev.images.length,
+    }));
+  }, []);
+
+  const nextImage = useCallback(() => {
+    setLightbox((prev) => ({
+      ...prev,
+      index: (prev.index + 1) % prev.images.length,
+    }));
+  }, []);
+
   return (
-    <div className="app">
-      {/* Cursor glow effect */}
-      <div className="cursor-glow" id="cursor-glow" />
+    <>
+      <AnimatePresence>
+        {loading && <PageLoader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
 
-      <Navbar />
-      <Hero />
-      <About />
-      <Hometown />
-      <Education />
-      <Skills />
-      <Projects />
-      <Internship />
-      <Achievements />
-      <Creative />
-      <Contact />
-    </div>
+      {!loading && (
+        <div className="app">
+          <CustomCursor />
+          <ScrollProgress />
+          <Navbar />
+          <Hero />
+          <About />
+          <Hometown onImageClick={openLightbox} />
+          <Education onImageClick={openLightbox} />
+          <Skills />
+          <Projects />
+          <Internship />
+          <Achievements />
+          <Creative onImageClick={openLightbox} />
+          <Contact />
+
+          {lightbox.index !== null && (
+            <Lightbox
+              images={lightbox.images}
+              index={lightbox.index}
+              onClose={closeLightbox}
+              onPrev={prevImage}
+              onNext={nextImage}
+            />
+          )}
+        </div>
+      )}
+    </>
   );
-}
-
-// Cursor glow effect
-if (typeof window !== 'undefined') {
-  document.addEventListener('mousemove', (e) => {
-    const glow = document.getElementById('cursor-glow');
-    if (glow) {
-      glow.style.left = e.clientX + 'px';
-      glow.style.top = e.clientY + 'px';
-    }
-  });
 }
 
 export default App;

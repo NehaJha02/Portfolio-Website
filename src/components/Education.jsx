@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FiBookOpen, FiMapPin, FiCalendar } from 'react-icons/fi';
+import TiltCard from './TiltCard';
 
 const schoolImages = [
   '/images/school/sps7.jpeg',
@@ -39,7 +40,7 @@ const education = [
   },
 ];
 
-export default function Education() {
+export default function Education({ onImageClick }) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
@@ -74,7 +75,7 @@ export default function Education() {
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.3 + i * 0.3, duration: 0.7 }}
             >
-              <div className="education__card glass-card">
+              <TiltCard className="education__card glass-card">
                 <div className="education__info">
                   <h3 className="education__title">{edu.title}</h3>
                   <div className="education__meta">
@@ -92,12 +93,14 @@ export default function Education() {
                       className="education__gallery-item"
                       whileHover={{ scale: 1.08, zIndex: 10 }}
                       transition={{ duration: 0.3 }}
+                      onClick={() => onImageClick?.(edu.images, j)}
+                      style={{ cursor: 'pointer' }}
                     >
                       <img src={img} alt={edu.institution} />
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </TiltCard>
 
               <div className="education__timeline-dot" />
             </motion.div>

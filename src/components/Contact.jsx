@@ -29,6 +29,22 @@ const contactLinks = [
   },
 ];
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 60, scale: 0.8 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      delay: 0.4 + i * 0.12,
+      duration: 0.7,
+      type: 'spring',
+      stiffness: 150,
+      damping: 15,
+    },
+  }),
+};
+
 export default function Contact() {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
@@ -37,9 +53,9 @@ export default function Contact() {
       <div className="contact__container">
         <motion.div
           className="section-label"
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -60 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="section-label__number">09</span>
           <span className="section-label__line" />
@@ -48,9 +64,9 @@ export default function Contact() {
 
         <motion.h2
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
+          initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+          animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ delay: 0.2, duration: 0.8 }}
         >
           Let's Connect
         </motion.h2>
@@ -73,12 +89,24 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               className="contact__card glass-card"
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.4 + i * 0.1, duration: 0.6 }}
-              whileHover={{ y: -8, scale: 1.03 }}
+              custom={i}
+              variants={cardVariants}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+              whileHover={{
+                y: -12,
+                scale: 1.08,
+                boxShadow: '0 20px 40px rgba(156, 107, 189, 0.3)',
+              }}
+              whileTap={{ scale: 0.95 }}
             >
-              <div className="contact__card-icon">{link.icon}</div>
+              <motion.div
+                className="contact__card-icon"
+                whileHover={{ rotate: [0, -15, 15, 0], scale: 1.3 }}
+                transition={{ duration: 0.5 }}
+              >
+                {link.icon}
+              </motion.div>
               <span className="contact__card-label">{link.label}</span>
               <span className="contact__card-value">{link.value}</span>
             </motion.a>
@@ -88,9 +116,9 @@ export default function Contact() {
         {/* Footer */}
         <motion.div
           className="contact__footer"
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.8, duration: 0.6 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1, duration: 0.6 }}
         >
           <p>Designed & built with <FiHeart className="contact__heart" /> by Neha Jha</p>
           <p className="contact__year">2025</p>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import FloatingShapes from './FloatingShapes';
 
 const images = [
   { src: '/images/jalpaiguri/jpg1.jpeg' },
@@ -7,11 +8,14 @@ const images = [
   { src: '/images/jalpaiguri/jpg3.jpeg' },
 ];
 
-export default function Hometown() {
+const allSrcs = images.map((img) => img.src);
+
+export default function Hometown({ onImageClick }) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
     <section className="hometown" id="hometown" ref={ref}>
+      <FloatingShapes />
       <div className="hometown__container">
         <motion.div
           className="section-label"
@@ -52,12 +56,13 @@ export default function Hometown() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.4 + i * 0.2, duration: 0.7 }}
               whileHover={{ y: -10, scale: 1.02 }}
+              onClick={() => onImageClick?.(allSrcs, i)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="hometown__image-wrapper">
-                <img src={img.src} alt={img.caption} className="hometown__image" />
+                <img src={img.src} alt="Jalpaiguri" className="hometown__image" />
                 <div className="hometown__image-overlay" />
               </div>
-              {img.caption && <p className="hometown__caption">{img.caption}</p>}
             </motion.div>
           ))}
         </div>

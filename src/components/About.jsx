@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useRef } from 'react';
 
 const paragraphs = [
   "Some people follow a fixed path — school, degree, job. I've been more interested in understanding what happens in between.",
@@ -10,40 +11,70 @@ const paragraphs = [
   "I'm not trying to rush the process. I'm just trying to understand it better, one step at a time."
 ];
 
+function AnimatedTitle({ text, inView }) {
+  const words = text.split(' ');
+  return (
+    <motion.h2 className="section-title">
+      {words.map((word, i) => (
+        <span key={i} style={{ display: 'inline-block', overflow: 'hidden', marginRight: '0.3em' }}>
+          <motion.span
+            style={{ display: 'inline-block' }}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={inView ? { y: '0%', opacity: 1 } : {}}
+            transition={{
+              delay: 0.2 + i * 0.08,
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </motion.h2>
+  );
+}
+
 export default function About() {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
 
   return (
     <section className="about" id="about" ref={ref}>
-      <div className="about__container">
+      <div ref={sectionRef} className="about__container">
+        {/* Parallax decorative line */}
+        <motion.div className="about__deco-line" style={{ y: bgY }} />
+
         <motion.div
           className="section-label"
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -60 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="section-label__number">01</span>
           <span className="section-label__line" />
           <span className="section-label__text">My Story</span>
         </motion.div>
 
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
-        >
-          The Journey So Far
-        </motion.h2>
+        <AnimatedTitle text="The Journey So Far" inView={inView} />
 
         <div className="about__content">
           {paragraphs.map((p, i) => (
             <motion.p
               key={i}
               className={`about__paragraph ${i === 0 ? 'about__paragraph--highlight' : ''}`}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + i * 0.15, duration: 0.6 }}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -60 : 60, filter: 'blur(8px)' }}
+              animate={inView ? { opacity: 1, x: 0, filter: 'blur(0px)' } : {}}
+              transition={{
+                delay: 0.4 + i * 0.12,
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
               {p}
             </motion.p>

@@ -12,6 +12,34 @@ const navLinks = [
   { name: 'Contact', href: '#contact' },
 ];
 
+function MagneticLink({ children, href, className, delay }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+    setPos({ x, y });
+  };
+
+  const reset = () => setPos({ x: 0, y: 0 });
+
+  return (
+    <motion.a
+      href={href}
+      className={className}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      style={{ x: pos.x, y: pos.y }}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,27 +55,29 @@ export default function Navbar() {
       className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="navbar__container">
-        <a href="#hero" className="navbar__logo">
+        <motion.a
+          href="#hero"
+          className="navbar__logo"
+          whileHover={{ scale: 1.1, rotate: -5 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <span className="navbar__logo-text">N</span>
           <span className="navbar__logo-dot">.</span>
-        </a>
+        </motion.a>
 
         <div className="navbar__links">
           {navLinks.map((link, i) => (
-            <motion.a
+            <MagneticLink
               key={link.name}
               href={link.href}
               className="navbar__link"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * i, duration: 0.5 }}
-              whileHover={{ y: -2 }}
+              delay={0.1 * i}
             >
               {link.name}
-            </motion.a>
+            </MagneticLink>
           ))}
         </div>
 
@@ -69,15 +99,18 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link, i) => (
+              <motion.a
                 key={link.name}
                 href={link.href}
                 className="navbar__mobile-link"
                 onClick={() => setMobileOpen(false)}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
               >
                 {link.name}
-              </a>
+              </motion.a>
             ))}
           </motion.div>
         )}

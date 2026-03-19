@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FiAward, FiStar, FiCode, FiFileText } from 'react-icons/fi';
+import TiltCard from './TiltCard';
 
 const achievements = [
   {
@@ -46,9 +47,9 @@ export default function Achievements() {
       <div className="achievements__container">
         <motion.div
           className="section-label"
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -60 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="section-label__number">07</span>
           <span className="section-label__line" />
@@ -57,9 +58,9 @@ export default function Achievements() {
 
         <motion.h2
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
+          initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+          animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ delay: 0.2, duration: 0.8 }}
         >
           Achievements & Certificates
         </motion.h2>
@@ -77,21 +78,27 @@ export default function Achievements() {
           {achievements.map((item, i) => (
             <motion.div
               key={i}
-              className="achievements__card glass-card"
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + i * 0.2, duration: 0.7 }}
-              whileHover={{ y: -8 }}
+              initial={{ opacity: 0, y: 60, scale: 0.9 }}
+              animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+              transition={{ delay: 0.4 + i * 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="achievements__card-icon">{item.icon}</div>
-              <h3>{item.title}</h3>
-              <p className="achievements__platform">{item.platform}</p>
-              <p className="achievements__desc">{item.description}</p>
-              {item.image && (
-                <div className="achievements__image-wrapper">
-                  <img src={item.image} alt={item.title} />
-                </div>
-              )}
+              <TiltCard className="achievements__card glass-card">
+                <motion.div
+                  className="achievements__card-icon"
+                  animate={inView ? { rotate: [0, -10, 10, 0] } : {}}
+                  transition={{ delay: 0.8 + i * 0.2, duration: 0.6 }}
+                >
+                  {item.icon}
+                </motion.div>
+                <h3>{item.title}</h3>
+                <p className="achievements__platform">{item.platform}</p>
+                <p className="achievements__desc">{item.description}</p>
+                {item.image && (
+                  <div className="achievements__image-wrapper">
+                    <img src={item.image} alt={item.title} />
+                  </div>
+                )}
+              </TiltCard>
             </motion.div>
           ))}
         </div>
@@ -109,30 +116,32 @@ export default function Achievements() {
           {certificates.map((cert, i) => (
             <motion.div
               key={i}
-              className="achievements__cert-card glass-card"
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.8 + i * 0.15, duration: 0.6 }}
-              whileHover={{ y: -6 }}
+              initial={{ opacity: 0, y: 60, rotateY: -15 }}
+              animate={inView ? { opacity: 1, y: 0, rotateY: 0 } : {}}
+              transition={{ delay: 0.8 + i * 0.2, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="achievements__cert-preview">
-                <img src={cert.preview} alt={cert.title} />
-              </div>
-              <div className="achievements__cert-info">
-                <div className="achievements__cert-icon">{cert.icon}</div>
-                <div>
-                  <h4>{cert.title}</h4>
-                  <p>{cert.issuer} &bull; {cert.date}</p>
+              <TiltCard className="achievements__cert-card glass-card">
+                <div className="achievements__cert-preview">
+                  <img src={cert.preview} alt={cert.title} />
                 </div>
-              </div>
-              <a
-                href={cert.file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="achievements__cert-link"
-              >
-                View Certificate
-              </a>
+                <div className="achievements__cert-info">
+                  <div className="achievements__cert-icon">{cert.icon}</div>
+                  <div>
+                    <h4>{cert.title}</h4>
+                    <p>{cert.issuer} &bull; {cert.date}</p>
+                  </div>
+                </div>
+                <motion.a
+                  href={cert.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="achievements__cert-link"
+                  whileHover={{ scale: 1.05, x: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  View Certificate
+                </motion.a>
+              </TiltCard>
             </motion.div>
           ))}
         </div>

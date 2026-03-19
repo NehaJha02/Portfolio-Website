@@ -10,7 +10,7 @@ const drawings = [
   '/images/drawings/draw5.jpeg',
 ];
 
-export default function Creative() {
+export default function Creative({ onImageClick }) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
@@ -67,6 +67,8 @@ export default function Creative() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.6 }}
               whileHover={{ y: -8, scale: 1.02 }}
+              onClick={() => onImageClick?.(drawings, i)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="creative__image-wrapper">
                 <img src={src} alt="Drawing" />

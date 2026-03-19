@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiExternalLink, FiGithub } from 'react-icons/fi';
+import { FiGithub } from 'react-icons/fi';
+import TiltCard from './TiltCard';
 
 const projects = [
   {
@@ -43,9 +44,9 @@ export default function Projects() {
       <div className="projects__container">
         <motion.div
           className="section-label"
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -60 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="section-label__number">05</span>
           <span className="section-label__line" />
@@ -54,9 +55,9 @@ export default function Projects() {
 
         <motion.h2
           className="section-title"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.7 }}
+          initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+          animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ delay: 0.2, duration: 0.8 }}
         >
           Things I've Built
         </motion.h2>
@@ -65,38 +66,70 @@ export default function Projects() {
           {projects.map((project, i) => (
             <motion.div
               key={i}
-              className="projects__card glass-card"
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + i * 0.2, duration: 0.7 }}
-              whileHover={{ y: -12 }}
+              initial={{ opacity: 0, y: 80, rotateX: 15 }}
+              animate={inView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+              transition={{
+                delay: 0.3 + i * 0.2,
+                duration: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
-              <div className="projects__card-header" style={{ background: project.gradient }}>
-                <span className="projects__emoji">{project.emoji}</span>
-                <span className="projects__date">{project.date}</span>
-                <h3 className="projects__title">{project.title}</h3>
-                <p className="projects__subtitle">{project.subtitle}</p>
-              </div>
-
-              <div className="projects__card-body">
-                <div className="projects__tech-tags">
-                  {project.tech.map((t, j) => (
-                    <span key={j} className="projects__tech-tag">{t}</span>
-                  ))}
+              <TiltCard className="projects__card glass-card">
+                <div className="projects__card-header" style={{ background: project.gradient }}>
+                  <motion.span
+                    className="projects__emoji"
+                    animate={{ rotate: [0, -10, 10, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    {project.emoji}
+                  </motion.span>
+                  <span className="projects__date">{project.date}</span>
+                  <h3 className="projects__title">{project.title}</h3>
+                  <p className="projects__subtitle">{project.subtitle}</p>
                 </div>
 
-                <ul className="projects__highlights">
-                  {project.highlights.map((h, j) => (
-                    <li key={j}>{h}</li>
-                  ))}
-                </ul>
+                <div className="projects__card-body">
+                  <div className="projects__tech-tags">
+                    {project.tech.map((t, j) => (
+                      <motion.span
+                        key={j}
+                        className="projects__tech-tag"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={inView ? { opacity: 1, scale: 1 } : {}}
+                        transition={{ delay: 0.6 + i * 0.2 + j * 0.05, type: 'spring', stiffness: 300 }}
+                      >
+                        {t}
+                      </motion.span>
+                    ))}
+                  </div>
 
-                <div className="projects__links">
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="projects__link">
-                    <FiGithub /> View Code
-                  </a>
+                  <ul className="projects__highlights">
+                    {project.highlights.map((h, j) => (
+                      <motion.li
+                        key={j}
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={inView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: 0.7 + i * 0.2 + j * 0.08 }}
+                      >
+                        {h}
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <div className="projects__links">
+                    <motion.a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="projects__link"
+                      whileHover={{ scale: 1.05, x: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FiGithub /> View Code
+                    </motion.a>
+                  </div>
                 </div>
-              </div>
+              </TiltCard>
             </motion.div>
           ))}
         </div>
