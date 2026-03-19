@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function PageLoader({ onComplete }) {
+interface PageLoaderProps {
+  onComplete: () => void;
+}
+
+export default function PageLoader({ onComplete }: PageLoaderProps) {
   const [show, setShow] = useState(true);
   const name = "Neha Jha";
 

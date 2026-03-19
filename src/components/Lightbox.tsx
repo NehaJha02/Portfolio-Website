@@ -1,7 +1,15 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-export default function Lightbox({ images, index, onClose, onPrev, onNext }) {
+interface LightboxProps {
+  images: string[];
+  index: number | null;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+export default function Lightbox({ images, index, onClose, onPrev, onNext }: LightboxProps) {
   if (index === null || index === undefined) return null;
 
   return (

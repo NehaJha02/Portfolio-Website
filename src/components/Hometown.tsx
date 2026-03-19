@@ -2,6 +2,10 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import FloatingShapes from './FloatingShapes';
 
+interface HometownProps {
+  onImageClick?: (images: string[], index: number) => void;
+}
+
 const images = [
   { src: '/images/jalpaiguri/jpg1.jpeg' },
   { src: '/images/jalpaiguri/jpg2.jpeg' },
@@ -10,7 +14,7 @@ const images = [
 
 const allSrcs = images.map((img) => img.src);
 
-export default function Hometown({ onImageClick }) {
+export default function Hometown({ onImageClick }: HometownProps) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (

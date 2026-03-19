@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 import { FiArrowDown } from 'react-icons/fi';
 
@@ -26,18 +26,18 @@ function ParticleCanvas() {
       mouse.x = e.clientX - rect.left;
       mouse.y = e.clientY - rect.top;
     };
-    canvas.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mousemove', onMouseMove);
 
-    // Create particles
-    const count = Math.min(60, Math.floor((canvas.width * canvas.height) / 15000));
+    const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 10000));
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r: Math.random() * 2 + 1,
-        color: ['rgba(156,107,189,0.3)', 'rgba(240,166,202,0.3)', 'rgba(212,187,240,0.3)'][Math.floor(Math.random() * 3)],
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2.5 + 0.5,
+        color: ['rgba(156,107,189,', 'rgba(240,166,202,', 'rgba(212,187,240,'][Math.floor(Math.random() * 3)],
+        pulse: Math.random() * Math.PI * 2,
       });
     }
 
@@ -47,38 +47,39 @@ function ParticleCanvas() {
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
+        p.pulse += 0.02;
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        // Mouse repulsion
         if (mouse.x !== null) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            p.x += dx * 0.02;
-            p.y += dy * 0.02;
+          if (dist < 150) {
+            const force = (150 - dist) / 150;
+            p.x += dx * force * 0.02;
+            p.y += dy * force * 0.02;
           }
         }
 
+        const alpha = 0.3 + Math.sin(p.pulse) * 0.2;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
+        ctx.fillStyle = p.color + alpha + ')';
         ctx.fill();
       });
 
-      // Draw connections
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < 120) {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(156,107,189,${0.08 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(156,107,189,${0.12 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.6;
             ctx.stroke();
           }
         }
@@ -91,7 +92,7 @@ function ParticleCanvas() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
-      canvas.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousemove', onMouseMove);
     };
   }, []);
 
@@ -100,74 +101,92 @@ function ParticleCanvas() {
 
 const nameVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.6 },
-  },
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.6 } },
 };
-
 const letterVariants = {
-  hidden: { opacity: 0, y: 50, rotateX: -80 },
+  hidden: { opacity: 0, y: 80, rotateX: -90, filter: 'blur(10px)' },
   visible: {
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)',
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 export default function Hero() {
   const [displayText, setDisplayText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
-  const name = "Neha Jha";
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  useEffect(() => {
+    const onMove = (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      setMouse({ x: (e.clientX - cx) / cx, y: (e.clientY - cy) / cy });
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, []);
 
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
-      if (i <= tagline.length) {
-        setDisplayText(tagline.slice(0, i));
-        i++;
-      } else {
-        clearInterval(interval);
-      }
+      if (i <= tagline.length) { setDisplayText(tagline.slice(0, i)); i++; }
+      else clearInterval(interval);
     }, 60);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 530);
-    return () => clearInterval(cursorInterval);
+    const id = setInterval(() => setShowCursor(p => !p), 530);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <section className="hero" id="hero">
+    <section className="hero" id="hero" ref={sectionRef}>
       <ParticleCanvas />
-      {/* Floating orbs */}
-      <div className="hero__orb hero__orb--1" />
-      <div className="hero__orb hero__orb--2" />
-      <div className="hero__orb hero__orb--3" />
 
-      <div className="hero__content">
+      {/* Parallax orbs that move with mouse */}
+      <motion.div
+        className="hero__orb hero__orb--1"
+        style={{ x: mouse.x * -30, y: mouse.y * -20 }}
+      />
+      <motion.div
+        className="hero__orb hero__orb--2"
+        style={{ x: mouse.x * 25, y: mouse.y * 15 }}
+      />
+      <motion.div
+        className="hero__orb hero__orb--3"
+        style={{ x: mouse.x * -15, y: mouse.y * 25 }}
+      />
+
+      <motion.div className="hero__content" style={{ y: contentY, opacity: contentOpacity }}>
         <motion.div
           className="hero__image-wrapper"
-          initial={{ scale: 0, opacity: 0, rotate: -10 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          style={{ x: mouse.x * -10, y: mouse.y * -10 }}
         >
-          <img
-            src="/images/profile/profile.jpeg"
-            alt="Neha Jha"
-            className="hero__image"
-          />
+          <img src="/images/profile/profile.jpeg" alt="Neha Jha" className="hero__image" />
           <div className="hero__image-glow" />
+          <motion.div
+            className="hero__image-ring"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          />
         </motion.div>
 
         <motion.p
           className="hero__greeting"
-          initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+          initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+          transition={{ delay: 0.4, duration: 1 }}
         >
           Hello, I'm
         </motion.p>
@@ -177,13 +196,10 @@ export default function Hero() {
           variants={nameVariants}
           initial="hidden"
           animate="visible"
+          style={{ perspective: 600 }}
         >
-          {name.split('').map((char, i) => (
-            <motion.span
-              key={i}
-              variants={letterVariants}
-              style={{ display: 'inline-block' }}
-            >
+          {"Neha Jha".split('').map((char, i) => (
+            <motion.span key={i} variants={letterVariants} style={{ display: 'inline-block' }}>
               {char === ' ' ? '\u00A0' : char}
             </motion.span>
           ))}
@@ -193,7 +209,7 @@ export default function Hero() {
           className="hero__tagline"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
         >
           <span className="hero__tagline-text">{displayText}</span>
           <span className={`hero__cursor ${showCursor ? '' : 'hero__cursor--hidden'}`}>|</span>
@@ -203,7 +219,7 @@ export default function Hero() {
           className="hero__subtitle"
           initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 1.6, duration: 0.8 }}
+          transition={{ delay: 1.8, duration: 0.8 }}
         >
           Software Developer Intern &bull; CSE Student &bull; Creative Soul
         </motion.p>
@@ -213,18 +229,15 @@ export default function Hero() {
           className="hero__scroll-btn"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 0.6 }}
+          transition={{ delay: 2.2, duration: 0.6 }}
           whileHover={{ scale: 1.1 }}
         >
           <span>Scroll to explore</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
+          <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
             <FiArrowDown />
           </motion.div>
         </motion.a>
-      </div>
+      </motion.div>
     </section>
   );
 }

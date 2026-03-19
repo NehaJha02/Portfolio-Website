@@ -3,6 +3,10 @@ import { useInView } from 'react-intersection-observer';
 import { FiBookOpen, FiMapPin, FiCalendar } from 'react-icons/fi';
 import TiltCard from './TiltCard';
 
+interface EducationProps {
+  onImageClick?: (images: string[], index: number) => void;
+}
+
 const schoolImages = [
   '/images/school/sps7.jpeg',
   '/images/school/sps3.jpeg',
@@ -40,7 +44,7 @@ const education = [
   },
 ];
 
-export default function Education({ onImageClick }) {
+export default function Education({ onImageClick }: EducationProps) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (

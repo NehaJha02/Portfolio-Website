@@ -1,10 +1,15 @@
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, type ReactNode, type HTMLAttributes, type MouseEvent } from 'react';
 
-export default function TiltCard({ children, className = '', ...props }) {
-  const ref = useRef(null);
+interface TiltCardProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  className?: string;
+}
 
-  const handleMouseMove = (e) => {
+export default function TiltCard({ children, className = '', ...props }: TiltCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -18,6 +23,7 @@ export default function TiltCard({ children, className = '', ...props }) {
   };
 
   const handleMouseLeave = () => {
+    if (!ref.current) return;
     ref.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     ref.current.style.transition = 'transform 0.5s ease';
   };

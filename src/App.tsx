@@ -14,6 +14,8 @@ import Contact from './components/Contact';
 import PageLoader from './components/PageLoader';
 import CustomCursor from './components/CustomCursor';
 import ScrollProgress from './components/ScrollProgress';
+import SectionConnector from './components/SectionConnector';
+import AnimatedBackground from './components/AnimatedBackground';
 import Lightbox from './components/Lightbox';
 import './App.css';
 
@@ -51,8 +53,10 @@ function App() {
 
       {!loading && (
         <div className="app">
+          <AnimatedBackground />
           <CustomCursor />
           <ScrollProgress />
+          <SectionConnector />
           <Navbar />
           <Hero />
           <About />
